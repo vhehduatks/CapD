@@ -1,1 +1,5 @@
 # CapD
+
+https://youtu.be/3LNHxezPi1I?list=LL
+https://youtu.be/PdkPI92KSIs?list=LL
+https://youtu.be/hxwEqXCgQO4
