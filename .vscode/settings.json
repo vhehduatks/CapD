@@ -1,0 +1,8 @@
+{
+<<<<<<< HEAD
+    "python.pythonPath": "C:\\Users\\140407\\AppData\\Local\\Continuum\\anaconda3\\python.exe",
+    "jupyter.jupyterServerType": "local",
+=======
+>>>>>>> 595c5b02fda7f8c710c3c19309da9673c02a5bea
+    "python.languageServer": "Pylance"
+}
