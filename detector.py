@@ -113,6 +113,7 @@ def yolo_deep_det(opt):
         img=img.half() if half else img.float()
         img/=255.0
         img=img.unsqueeze(0) if img.ndimension()==3 else img
+        ret_txt=''
 
         #inference
         t1=time_synchronized()
@@ -161,17 +162,25 @@ def yolo_deep_det(opt):
                     for j, output in enumerate(outputs):
                         bbox_left = output[0]
                         bbox_top = output[1]
-                        bbox_w = output[2]
-                        bbox_h = output[3]
+                        bbox_right = output[2]
+                        bbox_bottom = output[3]
                         identity = output[-1]
-                        with open(txt_path, 'a') as f:
-                            f.write(('%g ' * 6 + '\n') % (frame_idx, identity, bbox_left,
-                                                           bbox_top, bbox_w, bbox_h))  # label format
+                        try:
+                            conf='%.2f'%confs[identity][0]
+                        except IndexError:
+                            conf=0
+
+                        # with open(txt_path, 'w') as f:
+                        #     f.write(('%g ' * 6 + '\n') % (frame_idx, identity, bbox_left, bbox_top, bbox_right, bbox_bottom))  # label format
+                        ret_txt+='{} {} {} {} {} {}\n'.format(identity, conf, bbox_left, bbox_top, bbox_right, bbox_bottom)
                         
             else:
                 deepsort.increment_ages()
 
-            
+            #make map form txt
+            with open(str(Path(out))+'\\'+'%07d'%frame_idx+'.txt', 'w') as f:
+                f.write(ret_txt)
+    
             print('%sDone. (%.3fs)' % (ret_str, t2 - t1))
 
             # Stream results---------------------------------------------------------------------
@@ -180,24 +189,27 @@ def yolo_deep_det(opt):
                 if cv2.waitKey(1) == ord('q'):  # q to quit
                     raise StopIteration
 
-            # Save results (image with detections)
-            if vid_path != save_path:  # new video
-                vid_path = save_path
-                if isinstance(vid_writer, cv2.VideoWriter):
-                    vid_writer.release()  # release previous video writer
+            if dataset.mode == 'image':
+                print('saving img!')
+            else:
+                # Save results (image with detections)
+                if vid_path != save_path:  # new video
+                    vid_path = save_path
+                    if isinstance(vid_writer, cv2.VideoWriter):
+                        vid_writer.release()  # release previous video writer
 
-                fps = vid_cap.get(cv2.CAP_PROP_FPS)
-                w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-                h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-                vid_writer = cv2.VideoWriter(
-                    save_path, cv2.VideoWriter_fourcc(*opt.fourcc), fps, (w, h))
-            vid_writer.write(im0s)
+                    fps = vid_cap.get(cv2.CAP_PROP_FPS)
+                    w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+                    h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+                    vid_writer = cv2.VideoWriter(
+                        save_path, cv2.VideoWriter_fourcc(*opt.fourcc), fps, (w, h))
+                vid_writer.write(im0s)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', type=str,
-                        default='yolov5/weights/yolov5s.pt', help='model.pt path')
+                        default='yolov5/weights/yolov5x.pt', help='model.pt path')
     parser.add_argument('--source', type=str,
                         default='inference/images', help='source')
     parser.add_argument('--output', type=str, default='inference/output',
@@ -208,7 +220,7 @@ if __name__ == '__main__':
                         help='output video codec (verify ffmpeg support)')
     parser.add_argument('--device', default='',
                         help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
-    parser.add_argument('--view-img', action='store_true',
+    parser.add_argument('--view-img', action='store_true', default=False,
                         help='display results')
     parser.add_argument('--save-txt', action='store_true',
                         help='save results to *.txt')
