@@ -13,6 +13,13 @@ from pathlib import Path
 
 
 
+class Detector :
+    def __init__(self, opt):
+      self.name = name
+      self.age = age
+
+    pass
+
 #color boundery
 palette = (2 ** 11 - 1, 2 ** 15 - 1, 2 ** 20 - 1)
 
@@ -79,7 +86,6 @@ def yolo_deep_det(opt):
     #init
     device = select_device(opt.device)
     half = device.type != 'cpu'
-    print('device:',device)
 
     #init deepsort
     cfg = get_config()
@@ -210,7 +216,7 @@ def yolo_deep_det(opt):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', type=str,
-                        default='yolov5/weights/yolov5x6.pt', help='model.pt path')
+                        default='yolov5/weights/yolov5x.pt', help='model.pt path')
     parser.add_argument('--source', type=str,
                         default='inference/images', help='source')
     parser.add_argument('--output', type=str, default='inference/output',
