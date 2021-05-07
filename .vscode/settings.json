@@ -1,5 +1,4 @@
 {
-    "python.pythonPath": "C:\\Users\\140407\\AppData\\Local\\Continuum\\anaconda3\\envs\\torch_gpu\\python.exe",
     "jupyter.jupyterServerType": "local",
     "python.languageServer": "Pylance"
 }
