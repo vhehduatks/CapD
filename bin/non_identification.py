@@ -1,27 +1,22 @@
 import cv2
-from save_output import Saving
 
 #color boundery
 palette = (2 ** 11 - 1, 2 ** 15 - 1, 2 ** 20 - 1)
 
 class Non_idt:
-    def __init__(self, ret_bbox,ret_identities,ret_img):
-      self.bboxss = ret_bbox
-      self.idss=ret_identities
-      self.imgs = ret_img
-
+    def __init__(self, ret_bboxss,ret_identitiess,ret_imgs):
+        self.bboxss = ret_bboxss
+        self.idss=ret_identitiess
+        self.imgs = ret_imgs
 
     def non_idt(self,selects):
         ret=list()
         for bboxs,ids,img in zip(self.bboxss,self.idss,self.imgs):
             ret_img=self._processing(selects,img,bboxs,ids)
-            # cv2.imshow('temp',ret_img)
-            # cv2.waitKey(0)
             ret.append(ret_img)
 
         return ret
         
-
     def _processing(self,selects,img,bbox, identities=None, offset=(0, 0)):
         
         for i, box in enumerate(bbox):
@@ -38,16 +33,16 @@ class Non_idt:
                 label = '{}id:{}'.format("", id)
                 t_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_PLAIN, 2, 1)[0]
                 self._area_mosaic(img,x1,y1,x2,y2)
+                #------remove----
                 cv2.rectangle(img, (x1, y1), (x2, y2), color, 2)
                 cv2.rectangle(img, (x1, y1), (x1 + t_size[0] + 3, y1 + t_size[1] + 4), color, -1)
                 cv2.putText(img, label, (x1, y1 +
                                         t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, 2, [255, 255, 255], 2)
-
+                #----------------
         return img
-        
-        
+            
     def _select(self,id,selected_id):
-        return True if id in selected_id else False
+        return False if id in selected_id else True
 
     def _compute_color_for_labels(self,label):
         color = [int((p * (label ** 2 - label + 1)) % 255) for p in palette]

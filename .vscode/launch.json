@@ -8,7 +8,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": ["--source", "test.mp4","--save-txt","--device","cpu"]
+            "args": ["--source", "test_short.mp4","--save_txt","--device","cpu"]
         }
     ]
 }
