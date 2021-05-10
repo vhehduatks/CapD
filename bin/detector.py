@@ -13,12 +13,7 @@ from yolov5.utils.torch_utils import select_device, time_synchronized
 from deep_sort_pytorch.utils.parser import get_config
 from deep_sort_pytorch.deep_sort import DeepSort
 from pathlib import Path
-"""
-detector 클래스는 탐색+ 추적만
-def yolo_deep_det(opt):
-    out, source, weights, view_img, save_txt, imgsz = \
-        opt.output, opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
-"""
+
 
 class Detector:
     def __init__(self,opt):
@@ -46,7 +41,6 @@ class Detector:
         self.half = self.device.type != 'cpu'
         self.vid_path = None
         self.vid_writer = None
-        # self.view_img = opt.view_img
         self.dataset = LoadImages(self.source, img_size=self.imgsz)
         
         #init yolo
@@ -72,7 +66,6 @@ class Detector:
         have_pic=list()
         cap=None
 
-
         for frame_idx,(path,img,im0s,vid_cap)in enumerate(self.dataset):
             img=torch.from_numpy(img).to(self.device)
             img=img.half() if self.half else img.float()
@@ -90,7 +83,6 @@ class Detector:
 
             #process detection
             for i,det in enumerate(pred):
-
                 if det is not None and len(det):
                     det[:, :4] = scale_coords(img.shape[2:], det[:, :4], self.im0s.shape).round()
                     bbox_xywh = []
@@ -123,14 +115,15 @@ class Detector:
                     if len(outputs)>0:
                         ret_bbox.append(outputs[:,:4])
                         ret_identities.append(outputs[:,-1])
-                    
                     self._save_txt(self.save_txt,outputs,confs,frame_idx)
-
                 else:
                     self.deepsort.increment_ages()
+
                 print('Find Objects :{} ({}s)'.format(det_info,'%.3f'%(t2-t1)))
+
             if not cap:
                 cap=self._get_fps_w_h(vid_cap)
+
         return ret_bbox,ret_identities,ret_img,cap
 
     def get_name(self):
@@ -149,9 +142,6 @@ class Detector:
                     conf='%.2f'%confs[identity][0]
                 except IndexError:
                     conf=0
-
-                # with open(txt_path, 'w') as f:
-                #     f.write(('%g ' * 6 + '\n') % (frame_idx, identity, bbox_left, bbox_top, bbox_right, bbox_bottom))  # label format
                 ret_txt+='{} {} {} {} {} {}\n'.format(identity, conf, bbox_left, bbox_top, bbox_right, bbox_bottom)
             
         with open(str(Path(self.out))+'\\'+'%07d'%frame_idx+'.txt', 'w') as f:
@@ -196,10 +186,7 @@ class Detector:
         return x_c, y_c, w, h
 
         
-"""
- outputs=[[left,top,right,bottom,identities],
-            [left,top,right,bottom,identities],
-            ,,,
-            [left,top,right,bottom,identities]]
-"""                                 
+
+# output : ret_bbox,ret_identities,ret_img,cap,bbox_txt,bbox_img
+                              
 
