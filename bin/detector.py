@@ -1,4 +1,3 @@
-
 import sys
 import os
 import torch
@@ -65,8 +64,9 @@ class Detector:
         ret_identities=list()
         have_pic=list()
         cap=None
-
+      
         for frame_idx,(path,img,im0s,vid_cap)in enumerate(self.dataset):
+         
             img=torch.from_numpy(img).to(self.device)
             img=img.half() if self.half else img.float()
             img/=255.0
@@ -143,9 +143,10 @@ class Detector:
                 except IndexError:
                     conf=0
                 ret_txt+='{} {} {} {} {} {}\n'.format(identity, conf, bbox_left, bbox_top, bbox_right, bbox_bottom)
-            
-        with open(str(Path(self.out))+'\\'+'%07d'%frame_idx+'.txt', 'w') as f:
-            f.write(ret_txt)
+
+        if txt_bool:
+            with open(str(Path(self.out))+'//'+'%07d'%frame_idx+'.txt', 'w') as f:
+                f.write(ret_txt)
 
     def _clear_dir(self):
         if os.path.exists(self.out):
