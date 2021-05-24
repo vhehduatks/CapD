@@ -1,9 +1,9 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Post
+from .models import Video
 
 
-class PostSerializer(ModelSerializer):
+class UploadSerializer(ModelSerializer):
     class Meta:
-        model=Post
+        model=Video
         fields='__all__'
         

@@ -6,5 +6,5 @@ class Post(models.Model):
     create=models.DateTimeField(auto_now=True)
     
 class Video(models.Model):
-    title=models.CharField(max_length=200)
-    video_key=models.CharField(max_length=12)
+    title=models.CharField(default='test1',max_length=200)
+    video_file=models.FileField(default='media/default.png',upload_to='upload')
