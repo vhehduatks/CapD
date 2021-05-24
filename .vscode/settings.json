@@ -1,5 +1,8 @@
 {
     "jupyter.jupyterServerType": "local",
     "python.languageServer": "Pylance",
-    "python.analysis.extraPaths": ["./bin"]
+    "python.analysis.extraPaths": [
+        "./bin"
+    ],
+    "python.pythonPath": "/opt/anaconda3/envs/CapD/bin/python"
 }
