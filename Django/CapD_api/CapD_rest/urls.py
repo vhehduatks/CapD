@@ -5,6 +5,7 @@ from . import views
 
 router=DefaultRouter()
 router.register('upload',views.UploadViewset,basename='upload')
+router.register('detector',views.DetectorViewset,basename='detector')
 
 urlpatterns = [
     path('',include(router.urls)),

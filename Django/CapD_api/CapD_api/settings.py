@@ -120,5 +120,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+# STATIC_ROOT = os.path.join(BASE_DIR, 'upload')
+STATICFILES_DIRS = [
+  os.path.join(BASE_DIR, 'CapD_rest/app/one_cap/')
+]
 
-MEDIA_URL ='CapD/Django/CapD_api/'
+
+# MEDIA_URL ='/CapD_rest/app/one_cap/'

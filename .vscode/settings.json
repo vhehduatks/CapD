@@ -2,7 +2,7 @@
     "jupyter.jupyterServerType": "local",
     "python.languageServer": "Pylance",
     "python.analysis.extraPaths": [
-        "./bin"
+        // "Django/CapD_api/CapD_rest/app",
     ],
     "python.pythonPath": "/opt/anaconda3/envs/CapD/bin/python"
 }
