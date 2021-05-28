@@ -11,3 +11,6 @@ class Video(models.Model):
 class Person(models.Model):
     det_id=models.TextField()
     img_url=models.TextField()
+
+class Selected_Person(models.Model):
+    selected_list=models.TextField(default='-1')

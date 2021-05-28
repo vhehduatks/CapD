@@ -1,8 +1,9 @@
+from django.db.models.query import QuerySet
 from rest_framework import mixins
-from rest_framework.viewsets import ModelViewSet , GenericViewSet
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
-from .serializers import UploadSerializer,PersonSerializer
-from .models import Video,Person
+from .serializers import UploadSerializer,PersonSerializer,Selected_PersonSerializer
+from .models import Video,Person,Selected_Person
 
 
 from glob import glob
@@ -11,9 +12,6 @@ from .app.non_identification import Non_idt
 from .app.save_output import Saving
 # from .app.main import *
 from django.contrib.staticfiles.storage import staticfiles_storage
-
-
-
 
 
 
@@ -26,7 +24,8 @@ class UploadViewset(ModelViewSet):
             model_video=UploadSerializer(data=data)
             if model_video.is_valid():
                 model_video.save()
-                return Response("upload file")
+                ret=UploadSerializer(Video.objects.all(),many=True)
+                return Response(ret.data)
             else:
                 return Response(status=404)
 
@@ -85,9 +84,30 @@ class DetectorViewset(ModelViewSet):
         img_db=PersonSerializer(Person.objects.all(),many=True)
         return Response(img_db.data)
 
-    #select ids
-    def create(self, request):
-        pass
 
-class SelectIDViewset(ModelViewSet):
-    pass
+
+class Non_idt_Viewset(ModelViewSet):
+    queryset=Selected_Person.objects.all()
+    serializer_class=Selected_PersonSerializer
+        #select ids
+    def create(self, request):
+        #[1,2,3,4,5] : input form
+        data=request.data
+        Selected_Person_model=Selected_PersonSerializer(data=data)
+
+        # store only one value on models
+        if Selected_Person_model.is_valid():
+            ret=Selected_PersonSerializer(Selected_Person.objects.all(),many=True)
+            if Selected_Person.objects.exists():
+                Selected_Person.objects.all().delete()
+                Selected_Person_model.save()
+            else:
+                Selected_Person_model.save()
+            return Response(ret.data)
+        else:
+            return Response(status=404)
+
+    
+
+        
+   

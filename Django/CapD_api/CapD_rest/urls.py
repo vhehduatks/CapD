@@ -6,6 +6,7 @@ from . import views
 router=DefaultRouter()
 router.register('upload',views.UploadViewset,basename='upload')
 router.register('detector',views.DetectorViewset,basename='detector')
+router.register('non_idt',views.Non_idt_Viewset,basename='non_idt')
 
 urlpatterns = [
     path('',include(router.urls)),
