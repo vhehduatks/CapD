@@ -84,6 +84,25 @@ class DetectorViewset(ModelViewSet):
         img_db=PersonSerializer(Person.objects.all(),many=True)
         return Response(img_db.data)
 
+    def create(self, request):
+        #[1,2,3,4,5] : input form
+        # Selected_Person.objects.all()
+        queryset=Selected_Person.objects.all()
+        serializer_class=Selected_PersonSerializer
+        data=request.data
+        Selected_Person_model=Selected_PersonSerializer(data=data)
+
+        # store only one value on models
+        if Selected_Person_model.is_valid():
+            ret=Selected_PersonSerializer(Selected_Person.objects.all(),many=True)
+            if Selected_Person.objects.exists():
+                Selected_Person.objects.all().delete()
+                Selected_Person_model.save()
+            else:
+                Selected_Person_model.save()
+            return Response(ret.data)
+        else:
+            return Response(status=404)
 
 
 class Non_idt_Viewset(ModelViewSet):
