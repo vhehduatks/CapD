@@ -1,6 +1,6 @@
 from django.db import models
 from rest_framework.serializers import ModelSerializer,HyperlinkedModelSerializer,ImageField
-from .models import Video,Person,Selected_Person
+from .models import Video,Person,Selected_Person,Download
 
 
 class UploadSerializer(ModelSerializer):
@@ -20,8 +20,7 @@ class Selected_PersonSerializer(ModelSerializer):
         model=Selected_Person
         fields='__all__'
 
-# class PersonSerializer(HyperlinkedModelSerializer):
-#     img=ImageField(use_url=True)
-#     class Meta:
-#         model=Person
-#         fields=('det_id','img')
+class DownloadSerializer(ModelSerializer):
+    class Meta:
+        model=Download
+        fields='__all__'

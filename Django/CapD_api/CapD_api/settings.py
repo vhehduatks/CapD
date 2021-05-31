@@ -122,7 +122,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 # STATIC_ROOT = os.path.join(BASE_DIR, 'upload')
 STATICFILES_DIRS = [
-  os.path.join(BASE_DIR, 'CapD_rest/app/one_cap/')
+  os.path.join(BASE_DIR, 'CapD_rest/app/one_cap/'),
+  os.path.join(BASE_DIR, 'CapD_rest/app/output_vid/'),
 ]
 
 

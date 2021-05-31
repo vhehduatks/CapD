@@ -20,6 +20,7 @@ class Non_idt:
     def _processing(self,selects,img,bbox, identities=None, offset=(0, 0)):
         
         for i, box in enumerate(bbox):
+            print('img processing... id: {}'.format(i))
             x1, y1, x2, y2 = [int(i) for i in box]
             x1 += offset[0]
             x2 += offset[0]

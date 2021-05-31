@@ -1,9 +1,5 @@
 from django.db import models
 
-# Create your models here.
-class Post(models.Model):
-    message=models.TextField()
-    create=models.DateTimeField(auto_now=True)
     
 class Video(models.Model):
     video_file=models.FileField(default='media/default.png',upload_to='CapD_rest/app/source')
@@ -14,3 +10,6 @@ class Person(models.Model):
 
 class Selected_Person(models.Model):
     selected_list=models.TextField(default='-1')
+
+class Download(models.Model):
+    url=models.TextField(default='-1')

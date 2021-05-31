@@ -1,132 +1,184 @@
-from django.db.models.query import QuerySet
-from rest_framework import mixins
+import shutil
+import os
+
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
-from .serializers import UploadSerializer,PersonSerializer,Selected_PersonSerializer
-from .models import Video,Person,Selected_Person
-
+from .serializers import UploadSerializer,PersonSerializer,Selected_PersonSerializer,DownloadSerializer
+from .models import Video,Person,Selected_Person,Download
+from rest_framework import status
 
 from glob import glob
 from .app.detector import Detector
 from .app.non_identification import Non_idt
 from .app.save_output import Saving
-# from .app.main import *
+
 from django.contrib.staticfiles.storage import staticfiles_storage
 
-
+ret_bboxss=None
+ret_identitiess=None
+ret_img=None
+cap=None
+processing_imgs=None
+file_name=None
 
 class UploadViewset(ModelViewSet):
     queryset=Video.objects.all()
     serializer_class = UploadSerializer
     #post
     def create(self, request):
-            data=request.data
-            model_video=UploadSerializer(data=data)
-            if model_video.is_valid():
-                model_video.save()
-                ret=UploadSerializer(Video.objects.all(),many=True)
-                return Response(ret.data)
+            global file_name
+
+            serializer = self.get_serializer(data=request.data)
+            vid_name=dict(request.data)
+            if vid_name:
+                vid_name=vid_name['video_file']
+                vid_name=str(vid_name).split(' ')[1]
+                file_name=vid_name
+
+            if os.path.exists('CapD_rest/app/source/'):
+                shutil.rmtree('CapD_rest/app/source/')
+                os.mkdir('CapD_rest/app/source/')
+            if serializer.is_valid(raise_exception=True):
+                self.perform_create(serializer)
+                headers = self.get_success_headers(serializer.data)
+                return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
             else:
-                return Response(status=404)
+                headers = self.get_success_headers(serializer.data)
+                return Response(status=status.HTTP_400_BAD_REQUEST,headers=headers)
 
     #get
     def list(self,request):
-        serializer = UploadSerializer(Video.objects.all(), many=True)
-        return Response(serializer.data)
+        queryset = self.filter_queryset(self.get_queryset())
+        
+        if queryset.count()>10:
+            queryset.delete()
 
-ret_bboxss=None
-ret_identitiess=None
-ret_img=None
-cap=None
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 class DetectorViewset(ModelViewSet):
     queryset=Person.objects.all()
     serializer_class=PersonSerializer
+    
 
     def _detecting(self):
         global ret_bboxss
         global ret_identitiess
         global ret_img
         global cap
-        t1=Detector('CapD_rest/app/source/test_short.mp4')
+        global file_name
+        
+        t1=Detector('CapD_rest/app/source/'+file_name)
+        file_name=t1.get_name()
         ret_bboxss,ret_identitiess,ret_img,cap=t1.yolo_deep_det()
 
 
-    def list(self,request):
 
+    def list(self,request):
         self._detecting()
 
         one_cap_path='CapD_rest/app/one_cap'
         condition='/*.jpg'
         Qset=list(Person.objects.all().values('det_id'))
         db_id_list=[]
-        file_id_list=[]
+        img_id_list=[]
         for dic in Qset:
             db_id_list.append(int(dic['det_id']))
     
         for img_path in glob(one_cap_path+condition):
             print(img_path)
-            file_id=img_path.split('/')[-1]
-            file_name=file_id
-            file_id=int(file_id.split('.')[0])
-            file_id_list.append(file_id)
+            img_id=img_path.split('/')[-1]
+            img_name=img_id
+            img_id=int(img_id.split('.')[0])
+            img_id_list.append(img_id)
             
-            url=request.build_absolute_uri(staticfiles_storage.url(file_name))
+            url=request.build_absolute_uri(staticfiles_storage.url(img_name))
             # print(url)
     
-            if file_id not in db_id_list:
-                Person.objects.create(det_id=file_id,img_url=url)
+            if img_id not in db_id_list:
+                Person.objects.create(det_id=img_id,img_url=url)
 
         for db_id in db_id_list:
-            if db_id not in file_id_list:
+            if db_id not in img_id_list:
                 Person.objects.filter(det_id=db_id).delete()  
- 
-        img_db=PersonSerializer(Person.objects.all(),many=True)
-        return Response(img_db.data)
 
-    def create(self, request):
-        #[1,2,3,4,5] : input form
-        # Selected_Person.objects.all()
-        queryset=Selected_Person.objects.all()
-        serializer_class=Selected_PersonSerializer
-        data=request.data
-        Selected_Person_model=Selected_PersonSerializer(data=data)
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
 
-        # store only one value on models
-        if Selected_Person_model.is_valid():
-            ret=Selected_PersonSerializer(Selected_Person.objects.all(),many=True)
-            if Selected_Person.objects.exists():
-                Selected_Person.objects.all().delete()
-                Selected_Person_model.save()
-            else:
-                Selected_Person_model.save()
-            return Response(ret.data)
-        else:
-            return Response(status=404)
-
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 class Non_idt_Viewset(ModelViewSet):
     queryset=Selected_Person.objects.all()
     serializer_class=Selected_PersonSerializer
         #select ids
     def create(self, request):
-        #[1,2,3,4,5] : input form
-        data=request.data
-        Selected_Person_model=Selected_PersonSerializer(data=data)
-
+        #1,2,3,4,5 : input form
+        # data=request.data
+        # Selected_Person_model=Selected_PersonSerializer(data=data)
+        serializer = self.get_serializer(data=request.data)
+        # serializer.is_valid(raise_exception=True)
         # store only one value on models
-        if Selected_Person_model.is_valid():
-            ret=Selected_PersonSerializer(Selected_Person.objects.all(),many=True)
-            if Selected_Person.objects.exists():
+        # if Selected_Person_model.is_valid():
+        #     # ret=Selected_PersonSerializer(Selected_Person.objects.all(),many=True)
+        if serializer.is_valid(raise_exception=True):
+            if Selected_Person.objects.os.path.exists():
+                # same as queryset.delete()
                 Selected_Person.objects.all().delete()
-                Selected_Person_model.save()
+                
+                self.perform_create(serializer)
             else:
-                Selected_Person_model.save()
-            return Response(ret.data)
+                self.perform_create(serializer)
+
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
-            return Response(status=404)
+            headers = self.get_success_headers(serializer.data)
+            return Response(status=status.HTTP_400_BAD_REQUEST,headers=headers)
 
     
+class DownloadViewset(ModelViewSet):
+    queryset=Download.objects.all()
+    serializer_class=DownloadSerializer
 
+    def _downloading(self,selected_id):
+        global processing_imgs
+        # print(processing_imgs)
+        t2=Non_idt(ret_bboxss,ret_identitiess,ret_img)
+        processing_imgs=t2.non_idt_func(selected_id)
         
+        t3=Saving(processing_imgs)
+        t3.res_save(cap,file_name)
+
+    def list(self,request):
+        global file_name
+        selected_person_list=list(Selected_Person.objects.all().values('selected_list'))
+        selected_person_list=selected_person_list[0]['selected_list']
+        selected_person_list=list(map(int,selected_person_list.replace('_',',').split(',')))
+        Download.objects.all().delete()
+
+        self._downloading(selected_person_list)
+
+        file_name='output_'+file_name
+        if os.path.exists('CapD_rest/app/output_vid/'+file_name):
+            download_url=request.build_absolute_uri(staticfiles_storage.url(file_name))
+            print(download_url)
+            Download.objects.create(url=download_url)
+
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
    

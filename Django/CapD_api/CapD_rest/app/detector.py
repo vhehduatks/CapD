@@ -46,7 +46,7 @@ class Detector:
         self.dataset = LoadImages(self.source, img_size=self.imgsz)
         
         #init yolo
-       
+
         self.model=torch.load(self.weights,map_location=self.device)['model'].float()
         self.model.to(self.device).eval()
         if self.half:
@@ -60,6 +60,7 @@ class Detector:
         self.confss=None
         self.im0s=None
         self.one_cap_path='CapD_rest/app/one_cap/'
+        self.output_vid_path='CapD_rest/app/output_vid'
         self._clear_dir()
         
     def yolo_deep_det(self):
@@ -157,6 +158,9 @@ class Detector:
             shutil.rmtree(self.out)  # delete output folder
         if os.path.exists(self.one_cap_path):
             shutil.rmtree(self.one_cap_path)  # delete one_cap_path folder
+        if os.path.exists(self.output_vid_path):
+            shutil.rmtree(self.output_vid_path)  # delete one_cap_path folder
+        os.makedirs(self.output_vid_path)
         os.makedirs(self.out)
         os.makedirs(self.one_cap_path)
 

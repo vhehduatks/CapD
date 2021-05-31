@@ -27,23 +27,23 @@ parser.add_argument("--file_name", type=str,
                     default="None")
 args = parser.parse_args()
 
-class Main:
+# class Main:
 
-    def Detector_class(self):
-        detector=Detector(args)    
-        ret_bboxss,ret_identitiess,ret_img,cap=detector.yolo_deep_det()
-        args.file_name=detector.get_name()
+#     def Detector_class(self):
+#         detector=Detector(args)    
+#         ret_bboxss,ret_identitiess,ret_img,cap=detector.yolo_deep_det()
+#         args.file_name=detector.get_name()
 
-        return ret_bboxss,ret_identitiess,ret_img,cap
+#         return ret_bboxss,ret_identitiess,ret_img,cap
 
-    def Non_idt_class(self,ret_bboxss,ret_identitiess,ret_img,selected_ids):
-        non_idt=Non_idt(ret_bboxss,ret_identitiess,ret_img)
-        processing_imgs=non_idt.non_idt_func(selected_ids)
-        return processing_imgs
+#     def Non_idt_class(self,ret_bboxss,ret_identitiess,ret_img,selected_ids):
+#         non_idt=Non_idt(ret_bboxss,ret_identitiess,ret_img)
+#         processing_imgs=non_idt.non_idt_func(selected_ids)
+#         return processing_imgs
 
-    def Saving(self,processing_imgs,cap):
-        saving=Saving(processing_imgs,args.output,args.fourcc)
-        saving.res_save(cap,args.file_name)
+#     def Saving(self,processing_imgs,cap):
+#         saving=Saving(processing_imgs,args.output,args.fourcc)
+#         saving.res_save(cap,args.file_name)
 
 
 # t1=Detector(args)    
