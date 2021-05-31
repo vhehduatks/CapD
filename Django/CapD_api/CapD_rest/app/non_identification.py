@@ -8,6 +8,7 @@ class Non_idt:
         self.bboxss = ret_bboxss
         self.idss=ret_identitiess
         self.imgs = ret_imgs
+        self.img_frame=1
 
     def non_idt_func(self,selects):
         ret=list()
@@ -18,9 +19,10 @@ class Non_idt:
         return ret
         
     def _processing(self,selects,img,bbox, identities=None, offset=(0, 0)):
-        
+        print('img processing... {}/{}'.format(self.img_frame,len(self.imgs)-2))
+        self.img_frame+=1
         for i, box in enumerate(bbox):
-            print('img processing... id: {}'.format(i))
+            
             x1, y1, x2, y2 = [int(i) for i in box]
             x1 += offset[0]
             x2 += offset[0]

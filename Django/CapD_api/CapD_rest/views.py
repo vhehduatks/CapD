@@ -64,7 +64,6 @@ class UploadViewset(ModelViewSet):
 class DetectorViewset(ModelViewSet):
     queryset=Person.objects.all()
     serializer_class=PersonSerializer
-    
 
     def _detecting(self):
         global ret_bboxss
@@ -76,8 +75,6 @@ class DetectorViewset(ModelViewSet):
         t1=Detector('CapD_rest/app/source/'+file_name)
         file_name=t1.get_name()
         ret_bboxss,ret_identitiess,ret_img,cap=t1.yolo_deep_det()
-
-
 
     def list(self,request):
         self._detecting()
@@ -178,6 +175,7 @@ class DownloadViewset(ModelViewSet):
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
+            
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 

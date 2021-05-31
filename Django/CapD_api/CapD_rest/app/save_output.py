@@ -20,7 +20,7 @@ class Saving:
                     self.vid_writer.release()  # release previous video writer
                 self.vid_writer = cv2.VideoWriter(self.path+'/output_'+file_name, cv2.VideoWriter_fourcc(*self.fourcc), fps, (w, h))
             self.vid_writer.write(im0s)
-            print('save vid frame({}/{})'.format(i+1,len(self.imgs)))
+            print('video saving... {}/{}'.format(i+1,len(self.imgs)))
 
 
 

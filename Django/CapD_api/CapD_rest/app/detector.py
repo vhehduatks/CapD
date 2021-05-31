@@ -26,7 +26,6 @@ class Detector:
 
         #init deepsort
         self.cfg = get_config()
-        print(os.path.relpath( os.path.dirname(os.path.abspath(os.path.dirname(__file__))) ))
         self.cfg.merge_from_file('CapD_rest/app/deep_sort_pytorch/configs/deep_sort.yaml')
         self.deepsort = DeepSort(self.cfg.DEEPSORT.REID_CKPT,
                             max_dist=self.cfg.DEEPSORT.MAX_DIST, 
@@ -124,7 +123,7 @@ class Detector:
                 else:
                     self.deepsort.increment_ages()
 
-                print('Find Objects :{} ({}s)'.format(det_info,'%.3f'%(t2-t1)))
+                print('Find Objects... {} ({}s)'.format(det_info,'%.3f'%(t2-t1)))
 
             if not cap:
                 cap=self._get_fps_w_h(vid_cap)

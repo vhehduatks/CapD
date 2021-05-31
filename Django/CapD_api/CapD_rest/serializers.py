@@ -1,5 +1,4 @@
-from django.db import models
-from rest_framework.serializers import ModelSerializer,HyperlinkedModelSerializer,ImageField
+from rest_framework.serializers import ModelSerializer
 from .models import Video,Person,Selected_Person,Download
 
 
