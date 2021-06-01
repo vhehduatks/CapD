@@ -127,7 +127,7 @@ class Non_idt_Viewset(ModelViewSet):
         # if Selected_Person_model.is_valid():
         #     # ret=Selected_PersonSerializer(Selected_Person.objects.all(),many=True)
         if serializer.is_valid(raise_exception=True):
-            if Selected_Person.objects.os.path.exists():
+            if Selected_Person.objects.exists():
                 # same as queryset.delete()
                 Selected_Person.objects.all().delete()
                 
