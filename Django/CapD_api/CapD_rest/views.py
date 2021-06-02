@@ -3,6 +3,7 @@ import os
 
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
+from django.http import FileResponse
 from .serializers import UploadSerializer,PersonSerializer,Selected_PersonSerializer,DownloadSerializer
 from .models import Video,Person,Selected_Person,Download
 from rest_framework import status
@@ -170,13 +171,21 @@ class DownloadViewset(ModelViewSet):
             print(download_url)
             Download.objects.create(url=download_url)
 
-        queryset = self.filter_queryset(self.get_queryset())
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            #---------test file download
+            file_path='CapD_rest/app/output_vid/'+file_name
+            response = FileResponse(open(file_path, 'rb'), content_type="mp4")
+            #Content-Disposition 에서 file name field check
+            response['Content-Disposition'] = 'attachment; filename='+file_name
             
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+            return response
+
+        # queryset = self.filter_queryset(self.get_queryset())
+        # page = self.paginate_queryset(queryset)
+        # if page is not None:
+        #     serializer = self.get_serializer(page, many=True)
+        #     return self.get_paginated_response(serializer.data)
+            
+        # serializer = self.get_serializer(queryset, many=True)
+        # return Response(serializer.data)
 
    
