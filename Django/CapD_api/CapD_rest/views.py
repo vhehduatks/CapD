@@ -94,7 +94,7 @@ class DetectorViewset(ModelViewSet):
             if platform.system()=='Darwin':
                 img_id=img_path.split('/')[-1]
             elif platform.system()=='Windows':
-                img_id=img_id.split('\\')[-1]
+                img_id=img_path.split('\\')[-1]
             img_name=img_id
             img_id=int(img_id.split('.')[0])
             img_id_list.append(img_id)
