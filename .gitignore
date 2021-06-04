@@ -1,3 +1,5 @@
 secrets.json
 *.pyc
 *sqlite3
+Django/CapD_api/CapD_rest/migrations/
+*.DS_Store
