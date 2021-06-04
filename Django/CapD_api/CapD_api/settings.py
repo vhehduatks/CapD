@@ -11,16 +11,20 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# scretkey setting
+ROOT_DIR = os.path.dirname(os.path.dirname(BASE_DIR))
+SECRETS_PATH = os.path.join(ROOT_DIR, 'secrets.json')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '(1&+$*by0cu54q(@kl2s%f5l##8on!u$xy&r59(700kpbsjgz_'
+SECRET_KEY = json.loads(open(SECRETS_PATH).read())['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

@@ -168,16 +168,16 @@ class DownloadViewset(ModelViewSet):
 
         
         if not os.path.exists('CapD_rest/app/output_vid/'+file_name):
-            # Download.objects.all().delete()
+            Download.objects.all().delete()
             self._downloading(selected_person_list)
             file_name='output_'+file_name
 
         try:
             print(os.path.exists('CapD_rest/app/output_vid/'+file_name))
             if os.path.exists('CapD_rest/app/output_vid/'+file_name):
-                # download_url=request.build_absolute_uri(staticfiles_storage.url(file_name))
+                download_url=request.build_absolute_uri(staticfiles_storage.url(file_name))
                 # print(download_url)
-                # Download.objects.create(url=download_url)
+                Download.objects.create(url=download_url)
                 #---------test file download
                 file_path='CapD_rest/app/output_vid/'+file_name
                 response = FileResponse(open(file_path, 'rb'), content_type="mp4")
