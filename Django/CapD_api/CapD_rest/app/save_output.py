@@ -3,7 +3,7 @@ import cv2
 
 class Saving:
 
-    def __init__(self, imgs, path='CapD_rest/app/output_vid', vid_codec='mp4v'):
+    def __init__(self, imgs, path='CapD_rest/app/output_vid', vid_codec='avc1'):
         self.imgs = imgs
         self.path = path
         self.fourcc=vid_codec

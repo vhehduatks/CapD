@@ -1,5 +1,6 @@
 import shutil
 import os
+import platform
 
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
@@ -20,7 +21,7 @@ ret_identitiess=None
 ret_img=None
 cap=None
 processing_imgs=None
-file_name=None
+file_name=''
 
 class UploadViewset(ModelViewSet):
     queryset=Video.objects.all()
@@ -90,7 +91,10 @@ class DetectorViewset(ModelViewSet):
     
         for img_path in glob(one_cap_path+condition):
             print(img_path)
-            img_id=img_path.split('/')[-1]
+            if platform.system()=='Darwin':
+                img_id=img_path.split('/')[-1]
+            elif platform.system()=='Windows':
+                img_id=img_id.split('\\')[-1]
             img_name=img_id
             img_id=int(img_id.split('.')[0])
             img_id_list.append(img_id)
@@ -144,8 +148,8 @@ class Non_idt_Viewset(ModelViewSet):
 
     
 class DownloadViewset(ModelViewSet):
-    queryset=Download.objects.all()
-    serializer_class=DownloadSerializer
+    # queryset=Download.objects.all()
+    # serializer_class=DownloadSerializer
 
     def _downloading(self,selected_id):
         global processing_imgs
@@ -161,24 +165,29 @@ class DownloadViewset(ModelViewSet):
         selected_person_list=list(Selected_Person.objects.all().values('selected_list'))
         selected_person_list=selected_person_list[0]['selected_list']
         selected_person_list=list(map(int,selected_person_list.replace('_',',').split(',')))
-        Download.objects.all().delete()
 
-        self._downloading(selected_person_list)
+        
+        if not os.path.exists('CapD_rest/app/output_vid/'+file_name):
+            # Download.objects.all().delete()
+            self._downloading(selected_person_list)
+            file_name='output_'+file_name
 
-        file_name='output_'+file_name
-        if os.path.exists('CapD_rest/app/output_vid/'+file_name):
-            download_url=request.build_absolute_uri(staticfiles_storage.url(file_name))
-            print(download_url)
-            Download.objects.create(url=download_url)
-
-            #---------test file download
-            file_path='CapD_rest/app/output_vid/'+file_name
-            response = FileResponse(open(file_path, 'rb'), content_type="mp4")
-            #Content-Disposition 에서 file name field check
-            response['Content-Disposition'] = 'attachment; filename='+file_name
-            
-            return response
-
+        try:
+            print(os.path.exists('CapD_rest/app/output_vid/'+file_name))
+            if os.path.exists('CapD_rest/app/output_vid/'+file_name):
+                # download_url=request.build_absolute_uri(staticfiles_storage.url(file_name))
+                # print(download_url)
+                # Download.objects.create(url=download_url)
+                #---------test file download
+                file_path='CapD_rest/app/output_vid/'+file_name
+                response = FileResponse(open(file_path, 'rb'), content_type="mp4")
+                #Content-Disposition 에서 file name field check
+                response['Content-Disposition'] = 'attachment; filename='+file_name
+                
+                return response
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_404_NOT_FOUND)
         # queryset = self.filter_queryset(self.get_queryset())
         # page = self.paginate_queryset(queryset)
         # if page is not None:
@@ -187,5 +196,3 @@ class DownloadViewset(ModelViewSet):
             
         # serializer = self.get_serializer(queryset, many=True)
         # return Response(serializer.data)
-
-   
