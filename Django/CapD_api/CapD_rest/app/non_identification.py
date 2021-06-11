@@ -36,12 +36,12 @@ class Non_idt:
                 label = '{}id:{}'.format("", id)
                 t_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_PLAIN, 2, 1)[0]
                 self._area_mosaic(img,x1,y1,x2,y2)
-                #------remove----
+                #------this part remove if delete id,bbox ----
                 cv2.rectangle(img, (x1, y1), (x2, y2), color, 1)
                 cv2.rectangle(img, (x1, y1), (x1 + t_size[0] + 3, y1 + t_size[1] + 4), color, -1)
                 cv2.putText(img, label, (x1, y1 +
                                         t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, 2, [255, 255, 255], 2)
-                #----------------
+                #----------------------------------------------
         return img
             
     def _select(self,id,selected_id):
