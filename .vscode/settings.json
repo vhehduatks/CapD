@@ -4,5 +4,5 @@
     "python.analysis.extraPaths": [
         // "Django/CapD_api/CapD_rest/app",
     ],
-    "python.pythonPath": "/usr/local/bin/python"
+    "python.pythonPath": "/opt/anaconda3/envs/CapD/bin/python"
 }
